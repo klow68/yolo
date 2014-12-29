@@ -72,7 +72,6 @@ int main()
 
 	int status = 0;
 	int semid;
-
 	/*
      * Create the segment.
      */
@@ -82,7 +81,7 @@ int main()
      * Now we attach the segment to our data space.
      */
   	nbVoiture = (int *) shmat(shmid_nbVoitures, NULL, 0);
-  	*nbVoiture = 0;	//initialisation à 0 du compteur
+  	*nbVoiture = 0;	//initialisation à 0 du compteur,
 	
 
 		pid_t pidSieges, pidTissus, pidFils, pidColoration, pidLivraison;
@@ -98,9 +97,12 @@ int main()
 		scanf("%d", nbVoiture);
 		printf("(client) %d voiture(s) commandée(s)\n",*nbVoiture);
 
+		kill(pidSieges,SIGUSR1);
+
 		shmctl(shmid_nbVoitures, IPC_RMID, NULL);
 
-		kill(pidSieges,SIGUSR1);
+		wait(NULL);
+
 
 		//int ret = semctl(semid, 0, IPC_RMID, ctl_arg);
 		

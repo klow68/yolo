@@ -15,7 +15,7 @@
 /* VARIABLES GLOBALES */
 int shmid_nbVoitures;
 int *nbVoiture;
-
+int commande = 0;
 /*                    */
 
 void erreur(const char *msg)
@@ -24,11 +24,16 @@ void erreur(const char *msg)
 		exit(1);
 }
 
+void traitant_SIGUSR(){
+  commande = 1;
+}
 
 int main(int argc, char *argv[])
 {
-sigset_t myset;
-(void) sigemptyset(&myset);
+
+
+  signal(SIGUSR1,traitant_SIGUSR);
+
 	printf("yolo\n");
 
     if(argc - 1 == 1) {
@@ -52,17 +57,17 @@ sigset_t myset;
   	if(nbVoiture == -1) erreur("shmat");
 
 
-while (1) {
+while (commande==0) {
     printf("pause\n");
-    sigpause(SIGUSR1);
 }
 
 
 
-  	printf("\n[shmid %d, shmat %d]\n", shmid_nbVoitures, nbVoiture);
-
+  	printf("\n[shmid %d, shmat %d]\n", shmid_nbVoitures, *nbVoiture);
+    printf("Debug1\n");
     printf("(atelier_sieges) Nb voiture(s) commandée(s) : %d\n", *nbVoiture);
-    if (*nbVoiture!=0){
+    printf("Debug2\n");
+    if (*nbVoiture != 0){
       printf("\n\nYOU FUCKING WIN\n\n");
     }
     exit(0);
