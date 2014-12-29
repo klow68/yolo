@@ -20,12 +20,15 @@ void erreur(const char *msg)
 
 int main(int argc, char *argv[])
 {
+
+	printf("yolo");
+
 	int shmid_nbV;
 
     if(argc - 1 == 1) {
       shmid_nbV = atoi(argv[1]);
     } else {
-      erreur("argument : descripteur d'entrée du tube");
+      erreur("argument : id IPC");
     }
 
 	int *nbVoiture = (int *) shmat(shmid_nbV, NULL, 0);

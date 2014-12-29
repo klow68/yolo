@@ -42,7 +42,9 @@ pid_t atelierSieges()
 			printf("valeur de fork = %d \n", pid);
 			printf("je suis le processus fils %d de pere %d\n", getpid(), getppid());
 
-			if (execl("./atelier_sieges", "atelier_sieges", shmid_nbVoitures, NULL) == -1)
+			char c = (char)(((int)'0')+shmid_nbVoitures);
+			char *ch = &c;
+			if (execl("./atelier_sieges", "atelier_sieges", ch, NULL) == -1)
                   erreur("execl");
 
 			printf("fin du processus fils\n");
@@ -54,7 +56,6 @@ pid_t atelierSieges()
 			printf("valeur de fork = %d \n", pid);
 			printf("je suis le processus pere %d et mon grand pere est : %d\n", getpid(), getppid());
 			printf("fin du processus pere\n");
-			exit(0);
 
 	}
 
