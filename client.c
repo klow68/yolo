@@ -70,8 +70,15 @@ int main()
 	int status = 0;
 	int semid;
 
+	/*
+     * Create the segment.
+     */
 	shmid_nbVoitures = shmget(1234, sizeof(int), IPC_CREAT | 0666);
-  	nbVoiture = (int *) shmat(shmid_nbVoitures, NULL, 0); // attache la valeur
+
+    /*
+     * Now we attach the segment to our data space.
+     */
+  	nbVoiture = (int *) shmat(shmid_nbVoitures, NULL, 0);
   	*nbVoiture = 0;	//initialisation à 0 du compteur
 	
 

@@ -37,9 +37,15 @@ int main(int argc, char *argv[])
 
     printf("\n[shmid %d, shmat %d]\n", shmid_nbVoitures, nbVoiture);
 
+/*
+     * Locate the segment.
+     */
     shmid_nbVoitures = shmget(1234, sizeof(int), 0666);
     if(shmid_nbVoitures < 0) erreur("shmget");
 
+/*
+     * Now we attach the segment to our data space.
+     */
   	nbVoiture = (int *) shmat(shmid_nbVoitures, NULL, 0);
   	if(nbVoiture == -1) erreur("shmat");
 
