@@ -14,7 +14,7 @@
 #include <sys/wait.h>
 
 #define IFLAGS (SEMPERM | IPC_CREAT)
-#define SKEY   (key_t) IPC_PRIVATE	
+#define SKEY   (key_t) 1234	
 #define SEMPERM 0600				  /* Permission */
 
 /* VARIABLES GLOBALES */
@@ -70,8 +70,8 @@ int main()
 	int status = 0;
 	int semid;
 
-	shmid_nbVoitures = shmget(IPC_PRIVATE, sizeof(int), 0666);
-  	nbVoiture = (int *) shmat(shmid_nbVoitures, NULL, 0);
+	shmid_nbVoitures = shmget(1234, sizeof(int), IPC_CREAT | 0666);
+  	nbVoiture = (int *) shmat(shmid_nbVoitures, NULL, 0); // attache la valeur
   	*nbVoiture = 0;	//initialisation à 0 du compteur
 	
 
@@ -86,7 +86,7 @@ int main()
 */
 		printf("Commande de voiture\n 1 voiture :25$\n 10 voitures : 250000£ \n 10000000 voitures : paiement nature\n");
 		scanf("%d", nbVoiture);
-		printf("%d voiture(s) commandée(s)\n",*nbVoiture);
+		printf("(client) %d voiture(s) commandée(s)\n",*nbVoiture);
 
 		shmctl(shmid_nbVoitures, IPC_RMID, NULL);
 
