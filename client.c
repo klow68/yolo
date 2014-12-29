@@ -13,5 +13,7 @@ void erreur(const char *msg)
 
 int main()
 {
+	int nbVoiture=0;
+		scanf("Commande de voiture\n 1 voiture :25$\n 10 voiture : 250000£ \n 10000000 voitures : payment nature",nbVoiture);
 	
 }
