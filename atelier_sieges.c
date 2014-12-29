@@ -5,6 +5,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/mman.h>
+#include <sys/shm.h>
 
 #define SKEY (key_t) 1234
 
@@ -27,24 +29,23 @@ int main(int argc, char *argv[])
 
 	printf("yolo\n");
 
-	int shmid_nbV;
-
     if(argc - 1 == 1) {
-      shmid_nbV = atoi(argv[1]);
+      shmid_nbVoitures = atoi(argv[1]);
     } else {
       erreur("argument : id IPC");
     }
 
-    printf("[shmid %d, shmat %d]\n", shmid_nbVoitures, nbVoiture);
+    printf("\n[shmid %d, shmat %d]\n", shmid_nbVoitures, nbVoiture);
 
-    if(shmid_nbVoitures = shmget(1234, sizeof(int), 0666) < 0)
-    	erreur("shmget");
-  	if(nbVoiture = (int *) shmat(shmid_nbVoitures, NULL, 0) == - 1)
-  		erreur("shmat");
+    shmid_nbVoitures = shmget(1234, sizeof(int), 0666);
+    if(shmid_nbVoitures < 0) erreur("shmget");
 
-  	printf("[shmid %d, shmat %d]\n", shmid_nbVoitures, nbVoiture);
+  	nbVoiture = (int *) shmat(shmid_nbVoitures, NULL, 0);
+  	if(nbVoiture == -1) erreur("shmat");
 
-    printf("(atelier_sieges) Nb voiture(s) commandée(s) : %d", *nbVoiture);
+  	printf("\n[shmid %d, shmat %d]\n", shmid_nbVoitures, nbVoiture);
+
+    printf("(atelier_sieges) Nb voiture(s) commandée(s) : %d\n", *nbVoiture);
 
     exit(0);
 
