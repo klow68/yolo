@@ -52,7 +52,7 @@ pid_t atelierSieges()
 			/* on est dans le processus pere */
 			wait(NULL); // on attend qu'un processus fils meurt ou ne s'execute pas si plus de fils
 			printf("valeur de fork = %d \n", pid);
-			printf("je suis le processus pere %d et mon grand pere est : %d\n", getpid(), getppids());
+			printf("je suis le processus pere %d et mon grand pere est : %d\n", getpid(), getppid());
 			printf("fin du processus pere\n");
 			exit(0);
 
