@@ -43,7 +43,7 @@ pid_t atelierSieges()
 			printf("je suis le processus fils %d de pere %d\n", getpid(), getppid());
 
 			char c = (char)(((int)'0')+shmid_nbVoitures);
-
+			sleep(4);
 			if (execl("./atelier_sieges", "atelier_sieges", &c, NULL) == -1)
                   erreur("execl");
 
@@ -52,7 +52,10 @@ pid_t atelierSieges()
 
 		default:
 			/* on est dans le processus pere */
-			wait(NULL); // on attend qu'un processus fils meurt ou ne s'execute pas si plus de fils
+			
+			// C'est a cause de ça que les fork marchait pas bien
+			// wait(NULL); // on attend qu'un processus fils meurt ou ne s'execute pas si plus de fils
+			
 			printf("valeur de fork = %d \n", pid);
 			printf("je suis le processus pere %d et mon grand pere est : %d\n", getpid(), getppid());
 			printf("fin du processus pere\n");
@@ -96,6 +99,8 @@ int main()
 		printf("(client) %d voiture(s) commandée(s)\n",*nbVoiture);
 
 		shmctl(shmid_nbVoitures, IPC_RMID, NULL);
+
+		kill(pidSieges,SIGUSR1);
 
 		//int ret = semctl(semid, 0, IPC_RMID, ctl_arg);
 		

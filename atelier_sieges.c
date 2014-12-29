@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include <sys/shm.h>
+#include <signal.h>
 
 #define SKEY (key_t) 1234
 
@@ -26,7 +27,8 @@ void erreur(const char *msg)
 
 int main(int argc, char *argv[])
 {
-
+sigset_t myset;
+(void) sigemptyset(&myset);
 	printf("yolo\n");
 
     if(argc - 1 == 1) {
@@ -49,10 +51,20 @@ int main(int argc, char *argv[])
   	nbVoiture = (int *) shmat(shmid_nbVoitures, NULL, 0);
   	if(nbVoiture == -1) erreur("shmat");
 
+
+while (1) {
+    printf("pause\n");
+    sigpause(SIGUSR1);
+}
+
+
+
   	printf("\n[shmid %d, shmat %d]\n", shmid_nbVoitures, nbVoiture);
 
     printf("(atelier_sieges) Nb voiture(s) commandée(s) : %d\n", *nbVoiture);
-
+    if (*nbVoiture!=0){
+      printf("\n\nYOU FUCKING WIN\n\n");
+    }
     exit(0);
 
 }
