@@ -14,7 +14,8 @@ void erreur(const char *msg)
 int main()
 {
 		int nbVoiture=0;
-		printf("Commande de voiture\n 1 voiture :25$\n 10 voiture : 250000£ \n 10000000 voitures : payment nature\n");
+		printf("Commande de voiture\n 1 voiture :25$\n 10 voitures : 250000£ \n 10000000 voitures : paiement nature\n");
 		scanf("%d",&nbVoiture);
-		printf("%d nb voiture commander",nbVoiture);	
+		printf("%d voiture(s) commandée(s)\n",nbVoiture);
+
 }
