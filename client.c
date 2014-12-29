@@ -43,8 +43,8 @@ pid_t atelierSieges()
 			printf("je suis le processus fils %d de pere %d\n", getpid(), getppid());
 
 			char c = (char)(((int)'0')+shmid_nbVoitures);
-			char *ch = &c;
-			if (execl("./atelier_sieges", "atelier_sieges", ch, NULL) == -1)
+
+			if (execl("./atelier_sieges", "atelier_sieges", &c, NULL) == -1)
                   erreur("execl");
 
 			printf("fin du processus fils\n");

@@ -1,14 +1,10 @@
-#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
+/*------------------*/
+#include <stdio.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include <errno.h>
-#include <sys/ipc.h>
-
-#include <semaphore.h> // compilation -lpthread -lrt
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/shm.h>
 
 
 void erreur(const char *msg)
@@ -21,7 +17,7 @@ void erreur(const char *msg)
 int main(int argc, char *argv[])
 {
 
-	printf("yolo");
+	printf("yolo\n");
 
 	int shmid_nbV;
 
@@ -34,5 +30,7 @@ int main(int argc, char *argv[])
 	int *nbVoiture = (int *) shmat(shmid_nbV, NULL, 0);
 
     printf("Nb voiture(s) commandée(s) : %d", *nbVoiture);
+
+    exit(0);
 
 }
