@@ -24,6 +24,7 @@ int main()
 
 				case (pid_t) 0:
 						/* on est dans le processus fils */
+						// lancer l'atelier de production de sièges
 						printf("valeur de fork = %d \n", pid);
 						printf("je suis le processus fils %d de pere %d\n", getpid(), getppid());
 						printf("fin du processus fils\n");
