@@ -126,18 +126,27 @@ void initTempsProd()
 void *AfficheEtat(void *data)
 {
 
-    //wait signal tous les thread on été crée
-    //uniquement pour l'atelier en aval
-
-    // fonction travaille()
-  
-    
     long num;
     num = (long) data;
     printf("\nJe suis le thread #%ld \n", num);
     printf("de TID : %ld \n", (long) pthread_self());
     fflush(stdout);
+
+    //wait signal tous les thread on été crée
+    //uniquement pour l'atelier en aval
+    if(num == 0) 
+    {
+      pthread_cond_wait(&threadCrees, &mutex);
+    }
+    travaille();
+
+
     pthread_exit(NULL);
+}
+
+void travaille()
+{
+
 }
 
 void initUsine()
@@ -179,6 +188,7 @@ void initUsine()
 
 
   /****************** Signal tous les thread sont crée début du travaille ****************/
+  pthread_cond_signal(&threadCrees, &mutex);
 
   for(k = 0; k < nbAteliers; k++) {
     // on fait dans boucle après pour éviter des désynchro car terminaison peut etre (très) rapide
@@ -209,7 +219,7 @@ int main(int argc, char *argv[])
     nbPiecesAProduire = 10;
     nbAteliers = 5;
 
-    initConf(); // si pas de conf => valeur tempsProd par defaut, commune a tous les ateliers [A FAIRE]
+    initConf();
 
     pointeurAnnihilation();
 
