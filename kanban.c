@@ -56,7 +56,6 @@ void initConf()
 
     case 3:
       initTempsProd();
-      initConf();
       break;
 
     case 4:
