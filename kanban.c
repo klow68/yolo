@@ -4,8 +4,7 @@
 /* Déclaration des variables globales */
 int nbPiecesAProduire, nbAteliers;
 int *tabTempsAteliers;
-
-
+int choix;
 
 /* Déclaration variables moniteur */
 pthread_t *tabAteliers;
@@ -22,13 +21,11 @@ void erreur(const char *msg)
 
 void initConf()
 {
-
-  int choix;
-
   printf("Bienvenue dans la configuration du programme Kanban.\n");
   printf("1 - Nombre de pièces à produire (Actuel : %d)\n", nbPiecesAProduire);
   printf("2 - Nombre d'ateliers (Actuel : %d)\n", nbAteliers);
   printf("3 - Valider configuration\n");
+  printf("4 - Configuration automatique -> 5 ateliers, 10 pièces, temps production 3s ");
   printf("Choix : ");
   scanf("%d", &choix);
 
@@ -59,15 +56,17 @@ void initConf()
 
 void initUsine()
 {
-
+  int i;
   tabAteliers = (pthread_t *) malloc(nbAteliers * sizeof(pthread_t));
   tabTempsAteliers = (int *) malloc(nbAteliers * sizeof(int));
-
-  int i;
-  for(i = 0; i < nbAteliers; i ++)
-  {
-    printf("Temps de production atelier n°%d : ", i);
-    scanf("%d", tabTempsAteliers+i);
+  
+  
+  if (choix != 4){
+    printf("Configuration temps de production des ateliers\n");
+    for (int i=0;i<nbAteliers;i++){
+        printf("Temps de production atelier n°%d : ", i+1);
+        scanf("%d",tabTempsAteliers[i]);
+    }
   }
 
 }
