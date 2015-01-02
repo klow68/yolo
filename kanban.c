@@ -60,7 +60,7 @@ void initUsine()
   tabAteliers = (pthread_t *) malloc(nbAteliers * sizeof(pthread_t));
   tabTempsAteliers = (int *) malloc(nbAteliers * sizeof(int));
   
-  
+
   if (choix != 4){
     printf("Configuration temps de production des ateliers\n");
     for (int i=0;i<nbAteliers;i++){
@@ -90,5 +90,7 @@ int main(int argc, char *argv[])
     initConf(); // si pas de conf => valeur tempsProd par defaut, commune a tous les ateliers [A FAIRE]
 
     pointeurAnnihilation();
+
+    printf("Fermeture de l'usine MeinCroft");
 
 }
