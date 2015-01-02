@@ -34,6 +34,7 @@ void initConf()
     case 1: 
       printf("Valeur : ");
       scanf("%d", &nbPiecesAProduire);
+      printf("\n");
       initConf();
       break;
 
