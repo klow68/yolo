@@ -130,6 +130,7 @@ void *AfficheEtat(void *data)
     num = (long) data;
     printf("\nJe suis le thread #%ld \n", num);  
     printf("de TID : %ld \n", (long) pthread_self());
+    sleep(2);
     fflush(stdout);
     pthread_exit(NULL);
 }
@@ -175,6 +176,8 @@ void initUsine()
     // on fait dans boucle après pour éviter des désynchro car terminaison peut etre (très) rapide
     pthread_join(tabAteliers[k], NULL); // idem wait
   }
+
+  printf("JE SUIS APRES LES JOINS YOLO !");
 
   pthread_exit(NULL);
 }
