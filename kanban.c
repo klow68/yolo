@@ -6,11 +6,12 @@
 
 /* Déclaration des variables globales */
 int nbPiecesAProduire, nbAteliers;
+int *tabTempsAteliers;
 
 
 
 /* Déclaration variables moniteur */
-pthread_t *tab_ateliers;
+pthread_t *tabAteliers;
 pthread_mutex_t mutex;
 pthread_cond_t produire, attendre;
 
@@ -44,18 +45,35 @@ void initConf()
 
     case 2:
       printf("Valeur : ");
-      scanf("%d", &snbAteliers);
+      scanf("%d", &nbAteliers);
       initConf();
       break;
 
     case 3:
-      printf("Configuration terminée.");
+      printf("Configuration terminée.\n");
+      initUsine();
       break;
 
     default: initConf();
     break;
 
   }
+}
+
+void initUsine()
+{
+
+  tabAteliers = (pthread_t *) malloc(nbAteliers * sizeof(pthread_t));
+  tabTempsAteliers = (int *) malloc(nbAteliers * sizeof(int));
+
+}
+
+pointeurAnnihilation()
+{
+  printf("Libération des ressources ...");
+  free(tabAteliers);
+  free(tabTempsAteliers);
+  printf("OK.")
 }
 
 
@@ -67,5 +85,7 @@ int main(int argc, char *argv[])
     nbAteliers = 5;
 
     initConf();
+
+    pointeurAnnihilation();
 
 }
