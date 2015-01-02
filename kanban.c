@@ -31,7 +31,7 @@ void initConf()
   printf("1 - Nombre de pièces à produire (Actuel : %d)\n", nbPiecesAProduire);
   printf("2 - Nombre d'ateliers (Actuel : %d)\n", nbAteliers);
 
-  char* stempsAuto = (booleanTempsProd == false ? "Désactivé" : "Activé");
+  char* stempsAuto = (booleanTempsProd == false ? "désactivé" : "activé");
   printf("3 - Temps de production commun (Actuel : %s - %d seconde(s))\n", stempsAuto, tempsProd);
   printf("4 - Valider configuration\n");
   printf("Choix : ");
@@ -75,7 +75,7 @@ void initTempsProd()
   int choix;
 
   printf("Gestion du temps de production : \n");
-  char* action = (booleanTempsProd == false ? "activer" : "désactiver");
+  char* action = (booleanTempsProd == false ? "Activer" : "Désactiver");
   printf("1 - %s\n", action);
   if(booleanTempsProd == true) 
   {
