@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <pthread.h>
 
-# define TIMEPROD 
-
-
 /* Déclaration des variables globales */
 int nbPiecesAProduire, nbAteliers;
 int *tabTempsAteliers;
@@ -66,14 +63,21 @@ void initUsine()
   tabAteliers = (pthread_t *) malloc(nbAteliers * sizeof(pthread_t));
   tabTempsAteliers = (int *) malloc(nbAteliers * sizeof(int));
 
+  int i;
+  for(i = 0; i < nbAteliers; i ++)
+  {
+    printf("Temps de production atelier n°%d : ", i);
+    scanf("%d", tabTempsAteliers+i);
+  }
+
 }
 
-pointeurAnnihilation()
+void pointeurAnnihilation()
 {
   printf("Libération des ressources ...");
   free(tabAteliers);
   free(tabTempsAteliers);
-  printf("OK.")
+  printf("OK.\n");
 }
 
 
@@ -84,7 +88,7 @@ int main(int argc, char *argv[])
     nbPiecesAProduire = 10;
     nbAteliers = 5;
 
-    initConf();
+    initConf(); // si pas de conf => valeur tempsProd par defaut, commune a tous les ateliers [A FAIRE]
 
     pointeurAnnihilation();
 
