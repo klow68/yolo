@@ -32,25 +32,28 @@ void initConf()
   printf("2 - Nombre d'ateliers (Actuel : %d)\n", nbAteliers);
   printf("3 - Valider configuration\n");
   printf("Choix : ");
-  scanf("%d", choix);
+  scanf("%d", &choix);
 
   switch(choix)
   {
     case 1: 
       printf("Valeur : ");
-      scanf("%d", nbPiecesAProduire);
+      scanf("%d", &nbPiecesAProduire);
       initConf();
+      break;
 
     case 2:
       printf("Valeur : ");
-      scanf("%d", nbAteliers);
+      scanf("%d", &snbAteliers);
       initConf();
+      break;
 
     case 3:
       printf("Configuration terminée.");
       break;
 
     default: initConf();
+    break;
 
   }
 }
