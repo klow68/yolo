@@ -125,12 +125,11 @@ void initTempsProd()
 
 void *AfficheEtat(void *data)
 {
-
+    
     long num;
     num = (long) data;
-    printf("\nJe suis le thread #%ld \n", num);  
+    printf("\nJe suis le thread #%ld \n", num);
     printf("de TID : %ld \n", (long) pthread_self());
-    sleep(2);
     fflush(stdout);
     pthread_exit(NULL);
 }
@@ -179,7 +178,6 @@ void initUsine()
 
   printf("JE SUIS APRES LES JOINS YOLO !");
 
-  pthread_exit(NULL);
 }
 
 void pointeurAnnihilation()
