@@ -1,5 +1,11 @@
+#include <stdlib.h>
 #include <stdio.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <pthread.h>
+#include <errno.h>
 
 #define true 1
 #define false 0
@@ -115,9 +121,24 @@ void initTempsProd()
   }
 }
 
+
+
+void *AfficheEtat(void *data)
+{
+
+    long num;
+    num = (long) data;
+    printf("\nJe suis le thread #%ld \n", num);  
+    printf("de TID : %ld \n", (long) pthread_self());
+    fflush(stdout);
+    pthread_exit(NULL);
+}
+
 void initUsine()
 {
-  int i;
+
+  int i, j, k, rc;
+
   tabAteliers = (pthread_t *) malloc(nbAteliers * sizeof(pthread_t));
   tabTempsAteliers = (int *) malloc(nbAteliers * sizeof(int));
   
@@ -140,6 +161,22 @@ void initUsine()
   for (i = 0; i < nbAteliers; i++){
     printf("Atelier n°%d : %d seconde(s)\n", i, tabTempsAteliers[i]);
   }
+
+  // Création des ateliers avec attribution d'un numéro
+  for (j = 0; j < nbAteliers; j++) {
+  rc = pthread_create(&tabAteliers[j], 0, &AfficheEtat, (void *) j);
+  usleep(30000);
+  if(rc != 0)
+      erreur("Erreur Creation thread");
+      //usleep(30000);
+  }
+
+  for(k = 0; k < nbAteliers; k++) {
+    // on fait dans boucle après pour éviter des désynchro car terminaison peut etre (très) rapide
+    pthread_join(tabAteliers[k], NULL); // idem wait
+  }
+
+  pthread_exit(NULL);
 }
 
 void pointeurAnnihilation()
@@ -153,6 +190,9 @@ void pointeurAnnihilation()
 
 
 
+
+
+
 int main(int argc, char *argv[])
 {
 
@@ -162,6 +202,8 @@ int main(int argc, char *argv[])
     initConf(); // si pas de conf => valeur tempsProd par defaut, commune a tous les ateliers [A FAIRE]
 
     pointeurAnnihilation();
+
+
 
     printf("\nFermeture de l'usine MeinCroft\n");
 
