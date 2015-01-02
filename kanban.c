@@ -125,6 +125,12 @@ void initTempsProd()
 
 void *AfficheEtat(void *data)
 {
+
+    //wait signal tous les thread on été crée
+    //uniquement pour l'atelier en aval
+
+    // fonction travaille()
+  
     
     long num;
     num = (long) data;
@@ -170,6 +176,9 @@ void initUsine()
       erreur("Erreur Creation thread");
       //usleep(30000);
   }
+
+
+  /****************** Signal tous les thread sont crée début du travaille ****************/
 
   for(k = 0; k < nbAteliers; k++) {
     // on fait dans boucle après pour éviter des désynchro car terminaison peut etre (très) rapide
