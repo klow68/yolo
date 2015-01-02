@@ -5,7 +5,7 @@
 
 
 /* Déclaration des variables globales */
-int nbPiecesAProduire, nbPostes;
+int nbPiecesAProduire, nbAteliers;
 
 
 
@@ -22,20 +22,47 @@ void erreur(const char *msg)
 		exit(1);
 }
 
+void initConf()
+{
+
+  int choix;
+
+  printf("Bienvenue dans la configuration du programme Kanban.\n");
+  printf("1 - Nombre de pièces à produire (Actuel : %d)\n", nbPiecesAProduire);
+  printf("2 - Nombre d'ateliers (Actuel : %d)\n", nbAteliers);
+  printf("3 - Valider configuration\n");
+  printf("Choix : ");
+  scanf("%d", choix);
+
+  switch(choix)
+  {
+    case 1: 
+      printf("Valeur : ");
+      scanf("%d", nbPiecesAProduire);
+      initConf();
+
+    case 2:
+      printf("Valeur : ");
+      scanf("%d", nbAteliers);
+      initConf();
+
+    case 3:
+      printf("Configuration terminée.");
+      break;
+
+    default: initConf();
+
+  }
+}
+
+
+
 int main(int argc, char *argv[])
 {
 
-    if(argc - 1 == 2)
-    {
+    nbPiecesAProduire = 10;
+    nbAteliers = 5;
 
-      nbPostes = argv[1];
-      nbPiecesAProduire = argv[2];
-
-      tab_ateliers = (pthread_t *) malloc(nbPostes*sizeof(pthread_t));
-
-    } else {
-      erreur("Arguments : 1) Nombre de postes 2) Nombre de pièces à produire");
-    }
-
+    initConf();
 
 }
