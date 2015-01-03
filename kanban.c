@@ -162,9 +162,17 @@ void travaille(int num)
     if (num != nbAteliers-1){
       pthread_cond_wait(&produire[num], &mutex);
     }
-    printf("\nl'atelier n°%d produit une piece", num);
-    pthread_cond_signal(&produire[num-1]);
+    printf("\nl'atelier n°%d produit une piece\n", num);
+    construire(num);
+    printf("num : %d\n",num-1);
+    if (num != 0){
+      pthread_cond_signal(&produire[num-1]);
+    }
   }
+}
+
+void construire(int num){
+  sleep(tabTempsAteliers[num]);
 }
 
 void initUsine()
