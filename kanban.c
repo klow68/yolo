@@ -135,7 +135,7 @@ void *AfficheEtat(void *data)
 
     //wait signal tous les thread on été crée
     //uniquement pour l'atelier en aval
-    if(num == 0) 
+    if(num == 0)
     {
       tabNbPiecesAttente[0] = nbPiecesAProduire;
       pthread_cond_wait(&threadCrees, &mutex);
@@ -161,6 +161,7 @@ void travaille(int num)
     pthread_cond_signal(&attendre[num+1]);
     if (num != nbAteliers-1){
       //produire()
+      printf("l'atelier n°%d produit une piece", num);
       pthread_cond_wait(&produire[num], &mutex);
     }
     pthread_cond_signal(&produire[num-1]);
