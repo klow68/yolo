@@ -11,12 +11,16 @@
 #define false 0
 
 /* Déclaration des variables globales */
-int nbPiecesAProduire, nbAteliers;
+int nbPiecesAProduire = 10;
+int nbAteliers = 5;
 int *tabNbPiecesAttente;
 int *tabTempsAteliers;
 int booleanTempsProd = true;
 int tempsProd = 1;
+int booleanNbPiecesCommun = true;
+int nbPiecesParConteneur = 10;
 int nbPiecesConstruites = 0;
+int *tabMaxConteneurAtelier;
 
 /* Déclaration variables moniteur */
 pthread_t *tabAteliers;
@@ -41,7 +45,11 @@ void initConf()
 
   char* stempsAuto = (booleanTempsProd == false ? "désactivé" : "activé");
   printf("3 - Temps de production commun (Actuel : %s - %d seconde(s))\n", stempsAuto, tempsProd);
-  printf("4 - Valider configuration\n");
+
+  char* sNbPieces = (booleanNbPiecesCommun == false ? "désactivé" : "activé");
+  printf("4 - Nombre de pieces/conteneur commun (Actuel : %s - %d pièce(s))\n", sNbPieces, nbPiecesParConteneur);
+
+  printf("5 - Valider configuration\n");
   printf("Choix : ");
   scanf("%d", &choix);
   printf("\n");
@@ -67,6 +75,10 @@ void initConf()
       break;
 
     case 4:
+      initNbPiecesConteneur();
+      break;
+
+    case 5:
       printf("Configuration terminée.\n");
       initUsine();
       break;
@@ -124,6 +136,53 @@ void initTempsProd()
 }
 
 
+void initNbPiecesConteneur()
+{
+  int choix;
+
+  printf("Gestion du nombre de pieces par conteneur par atelier : \n");
+  char* action = (booleanNbPiecesCommun == false ? "Activer" : "Désactiver");
+  printf("1 - %s\n", action);
+  if(booleanNbPiecesCommun == true) 
+  {
+    printf("2 - Modifier le temps de production commun\n");
+    printf("3 - Valider\n");
+  } else {
+    printf("2 - Valider\n");
+  }
+
+  printf("Choix : ");
+  scanf("%d", &choix);
+  printf("\n");
+
+  switch(choix)
+  {
+    case 1: booleanNbPiecesCommun = (booleanNbPiecesCommun == false ? true : false); initNbPiecesConteneur(); break;
+
+    case 2:
+      if(booleanNbPiecesCommun == true) {
+        printf("Valeur : ");
+        scanf("%d", &nbPiecesParConteneur);
+        printf("\n");
+        initTempsProd();
+      } else {
+        printf("Choix validé.\n");
+        initConf();
+      }
+      
+      break;
+
+    case 3:
+      printf("Choix validé.\n");
+      initConf();
+      break;
+
+    default: initConf();
+    break;
+  }
+}
+
+
 
 void *AfficheEtat(void *data)
 {
@@ -143,7 +202,7 @@ void *AfficheEtat(void *data)
       sleep(1);
       printf("\n*************************** Usine Crée ***************************\n");
     }
-    
+
     travaille(num);
 
     printf("thread num %d a terminé\n", num);
@@ -188,6 +247,7 @@ void initUsine()
   // attribution de mémoire de manière dynamique au différent tableau
   tabAteliers = (pthread_t *) malloc(nbAteliers * sizeof(pthread_t));
   tabTempsAteliers = (int *) malloc(nbAteliers * sizeof(int));
+  tabMaxConteneurAtelier = (int *) malloc(nbAteliers * sizeof(int));
   tabNbPiecesAttente = (int * ) malloc(nbAteliers * sizeof(int));
   attendre = (pthread_cond_t * ) malloc(nbAteliers * sizeof(pthread_cond_t));
   produire = (pthread_cond_t * ) malloc(nbAteliers * sizeof(pthread_cond_t));
@@ -205,11 +265,30 @@ void initUsine()
     }
   }
 
+  if(booleanNbPiecesCommun == false)
+  {
+    printf("Configuration manuelle du nombre de pieces par conteneur par atelier\n");
+    for (i = 0; i < nbAteliers; i++){
+        printf("Capacité du conteneur de l'atelier n°%d : ", i+1);
+        scanf("%d",tabMaxConteneurAtelier + i);
+    }
+  } else {
+    for (i = 0; i < nbAteliers; i++){
+        tabMaxConteneurAtelier[i] = nbPiecesParConteneur;
+    }
+  }
+
   printf("\n");
-  printf("Affichage du tableau des temps : \n");
+  printf("Affichage du tableau des temps : \n\n");
 
   for (i = 0; i < nbAteliers; i++){
     printf("Atelier n°%d : %d seconde(s)\n", i, tabTempsAteliers[i]);
+  }
+
+  printf("\nAffichage du tableau des capacités : \n\n");
+
+  for (i = 0; i < nbAteliers; i++){
+    printf("Atelier n°%d : %d pièce(s)/conteneur\n", i, tabMaxConteneurAtelier[i]);
   }
 
   // Création des ateliers avec attribution d'un numéro
@@ -250,9 +329,6 @@ void pointeurAnnihilation()
 
 int main(int argc, char *argv[])
 {
-
-    nbPiecesAProduire = 10;
-    nbAteliers = 5;
 
     initConf();
 
