@@ -150,13 +150,17 @@ void *AfficheEtat(void *data)
 
 void travaille(int num)
 {
-  // ne marche pas pourquoi? ^^
-  printf("\nthread num : %d travaille\n", num);
-  if (tabNbPiecesAttente[num] == 0){
-    pthread_cond_wait(&attendre[num], &mutex);
+  // tant qu'il reste des pièce a produire (il faudrat un mutex sur la variable)
+  while(tabNbPiecesAttente[0]!=0){
+    printf("\nthread num : %d travaille\n", num);
+    if (tabNbPiecesAttente[num] == 0){
+      printf("Dors : %d\n", num);
+      pthread_cond_wait(&attendre[num], &mutex);
+    }
+    printf("thread num %d c'est réveiller\n", num);
+    pthread_cond_signal(&attendre[num+1]);
+    pthread_cond_wait(&produire[num], &mutex);
   }
-  pthread_cond_signal(&attendre[num+1]);
-
 }
 
 void initUsine()
