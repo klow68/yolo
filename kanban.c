@@ -15,7 +15,8 @@ int nbPiecesAProduire, nbAteliers;
 int *tabNbPiecesAttente;
 int *tabTempsAteliers;
 int booleanTempsProd = true;
-int tempsProd = 3;
+int tempsProd = 1;
+int nbPiecesConstruites = 0;
 
 /* Déclaration variables moniteur */
 pthread_t *tabAteliers;
@@ -142,9 +143,10 @@ void *AfficheEtat(void *data)
       sleep(1);
       printf("\n*************************** Usine Crée ***************************\n");
     }
+    
     travaille(num);
 
-    printf("thread num %d a terminer\n", num);
+    printf("thread num %d a terminé\n", num);
     pthread_exit(NULL);
 }
 
@@ -152,21 +154,24 @@ void travaille(int num)
 {
   // tant qu'il reste des pièce a produire (il faudrat un mutex sur la variable)
   while(tabNbPiecesAttente[0]!=0){
-    printf("\nthread num : %d travaille\n", num);
+    //printf("thread num : %d travaille\n", num);
     if (tabNbPiecesAttente[num] == 0){
-      printf("Dors : %d\n", num);
+      //printf("Dors : %d\n", num);
       pthread_cond_wait(&attendre[num], &mutex);
     }
-    printf("thread num %d c'est réveiller\n", num);
+    printf("thread num %d c'est réveillé\n", num);
     pthread_cond_signal(&attendre[num+1]);
     if (num != nbAteliers-1){
       pthread_cond_wait(&produire[num], &mutex);
     }
-    printf("\nl'atelier n°%d produit une piece\n", num);
+    printf("\nl'atelier n°%d produit une piece", num);
     construire(num);
-    printf("num : %d\n",num-1);
     if (num != 0){
       pthread_cond_signal(&produire[num-1]);
+    } else {
+      nbPiecesConstruites ++;
+      printf("\n\n######## Nombre de pieces produites : [%d/%d] ########\n\n", nbPiecesConstruites, nbPiecesAProduire);
+      tabNbPiecesAttente[num] --;
     }
   }
 }
