@@ -160,10 +160,9 @@ void travaille(int num)
     printf("thread num %d c'est réveiller\n", num);
     pthread_cond_signal(&attendre[num+1]);
     if (num != nbAteliers-1){
-      //produire()
       pthread_cond_wait(&produire[num], &mutex);
-      printf("l'atelier n°%d produit une piece", num);
     }
+    printf("\nl'atelier n°%d produit une piece", num);
     pthread_cond_signal(&produire[num-1]);
   }
 }
