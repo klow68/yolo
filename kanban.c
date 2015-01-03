@@ -159,7 +159,13 @@ void travaille(int num)
     }
     printf("thread num %d c'est réveiller\n", num);
     pthread_cond_signal(&attendre[num+1]);
-    pthread_cond_wait(&produire[num], &mutex);
+    if (num == nbAteliers-1){
+      //produire()
+      pthread_cond_signal(&produire[num-1]);
+    }
+    else{
+      pthread_cond_wait(&produire[num], &mutex);
+    }
   }
 }
 
@@ -240,8 +246,6 @@ int main(int argc, char *argv[])
     initConf();
 
     pointeurAnnihilation();
-
-
 
     printf("\nFermeture de l'usine MeinCroft\n");
 
