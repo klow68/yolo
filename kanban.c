@@ -12,6 +12,7 @@
 
 /* Déclaration des variables globales */
 int nbPiecesAProduire, nbAteliers;
+int *tabNbPiecesAttente;
 int *tabTempsAteliers;
 int booleanTempsProd = true;
 int tempsProd = 3;
@@ -19,7 +20,7 @@ int tempsProd = 3;
 /* Déclaration variables moniteur */
 pthread_t *tabAteliers;
 pthread_mutex_t mutex;
-pthread_cond_t produire, attendre;
+pthread_cond_t *produire, *attendre, threadCrees;
 
 
 /*                    */
@@ -136,16 +137,25 @@ void *AfficheEtat(void *data)
     //uniquement pour l'atelier en aval
     if(num == 0) 
     {
+      tabNbPiecesAttente[0] = nbPiecesAProduire;
       pthread_cond_wait(&threadCrees, &mutex);
+      sleep(1);
+      printf("\n*************************** Usine Crée ***************************\n");
     }
-    travaille();
+    travaille(num);
 
-
+    printf("thread num %d a terminer\n", num);
     pthread_exit(NULL);
 }
 
-void travaille()
+void travaille(int num)
 {
+  // ne marche pas pourquoi? ^^
+  printf("\nthread num : %d travaille\n", num);
+  if (tabNbPiecesAttente[num] == 0){
+    pthread_cond_wait(&attendre[num], &mutex);
+  }
+  pthread_cond_signal(&attendre[num+1]);
 
 }
 
@@ -154,8 +164,12 @@ void initUsine()
 
   int i, j, k, rc;
 
+  // attribution de mémoire de manière dynamique au différent tableau
   tabAteliers = (pthread_t *) malloc(nbAteliers * sizeof(pthread_t));
   tabTempsAteliers = (int *) malloc(nbAteliers * sizeof(int));
+  tabNbPiecesAttente = (int * ) malloc(nbAteliers * sizeof(int));
+  attendre = (pthread_cond_t * ) malloc(nbAteliers * sizeof(pthread_cond_t));
+  produire = (pthread_cond_t * ) malloc(nbAteliers * sizeof(pthread_cond_t));
   
 
   if (booleanTempsProd == false){
@@ -188,14 +202,14 @@ void initUsine()
 
 
   /****************** Signal tous les thread sont crée début du travaille ****************/
-  pthread_cond_signal(&threadCrees, &mutex);
+  pthread_cond_signal(&threadCrees);
 
   for(k = 0; k < nbAteliers; k++) {
     // on fait dans boucle après pour éviter des désynchro car terminaison peut etre (très) rapide
     pthread_join(tabAteliers[k], NULL); // idem wait
   }
 
-  printf("JE SUIS APRES LES JOINS YOLO !");
+  //printf("\nJE SUIS APRES LES JOINS YOLO !");
 
 }
 
