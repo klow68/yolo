@@ -1,0 +1,82 @@
+condition demande / livraison
+
+
+Intermediaire()
+int pieceConteneurFini = 0;
+while(boolean stop ? non : oui) { // variable a changer quand on a fini de tout construire
+	Tant que TableauDeLancement!=0 {
+		while (NBtaille conteneur précédent){
+			if (stock[0]!= 0){
+				construire();
+			}
+			else if (stock[0]==0 && stock[1]!=0){
+				stock[0]=stock[1];
+				stock[1]=0:
+				homme flux demande conteneur
+			}
+			else{
+				homme flux demande conteneur
+				wait(livraison)
+			}
+		}
+		livraisonHommeFlux();
+		pieceConteuneurFini = 0
+	}
+	wait(attendre[num]);
+}
+changement boolean stop suivant
+
+Aval()
+Tant que pièce a construire{
+	if (stock[0]!= 0){
+		construire();
+		livraisonHommeFlux();
+	}
+	else if (stock[0]==0 && stock[1]!=0){
+		stock[0]=stock[1];
+		stock[1]=0:
+		homme flux demande conteneur
+	}
+	else{
+		homme flux demande conteneur
+		wait(livraison)
+	}
+}
+changement boolean suivant
+
+Amont()
+int pieceConteneurFini = 0;
+while(boolean stop ? non : oui) {
+	Tant que TableauDeLancement!=0 {
+		while (NBtaille conteneur précédent){
+			Tant que TableauDeLancement!=0 {
+				construire();
+			}
+		}
+		livraisonHommeFlux();
+		pieceConteuneurFini = 0
+	}
+	wait(attendre[num]);
+}
+changement boolean stop suivant
+
+
+construire()
+if (num != nbAtelier-1){
+	nb stock[num] --;
+}
+sleep(NBTemps fabrication);
+pieceConteneurFini++;
+
+
+demandeConteneurHommeFlux()
+TableauDeLancement[Suivant] ++;
+signal(attendre[suivant]);
+
+
+livraisonHommeFlux()
+nbstock[suivant] = NBMAXConteneur[suiavant];
+signal(livraison[précédent])
+
+
+
