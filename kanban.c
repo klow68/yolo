@@ -204,7 +204,8 @@ void *AfficheEtat(void *data)
     }
 
     travaille(num);
-
+    // pour le moment
+    exit(0);
     printf("thread num %d a terminé\n", num);
     pthread_exit(NULL);
 }
@@ -212,7 +213,7 @@ void *AfficheEtat(void *data)
 void travaille(int num)
 {
   // tant qu'il reste des pièce a produire (il faudrat un mutex sur la variable)
-  while(tabNbPiecesAttente[0]!=0){
+  while(nbPiecesConstruites != nbPiecesAProduire){
     //printf("thread num : %d travaille\n", num);
     if (tabNbPiecesAttente[num] == 0){
       //printf("Dors : %d\n", num);
