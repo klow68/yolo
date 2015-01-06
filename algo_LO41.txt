@@ -1,4 +1,4 @@
-condition demande / livraison
+condition attendre et livraison
 
 
 Intermediaire()
