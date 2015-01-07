@@ -251,6 +251,7 @@ intermediaire(int num){
 					printf("test2\n");
 						while (tabMaxConteneurAtelier[num-1] > pieceConteneurFini){
 							printf("\n\n");
+
 							pthread_mutex_lock(&mutex2);
 							printf("stock : %i\n", stock[num][0]);
 							printf("stock 1 : %i\n", stock[num][1]);
@@ -259,6 +260,8 @@ intermediaire(int num){
 									printf("contruire interm\n");
 										construire(num);
 										pieceConteneurFini++;
+										printf("\ndebug fin\n");
+										pthread_mutex_unlock(&mutex2);
 								}
 								else if (stock[num][0]==0 && stock[num][1]!=0){
 										stock[num][0] = stock[num][1];
@@ -267,7 +270,7 @@ intermediaire(int num){
 										demandeConteneurHommeFlux(num);
 								}
 								else{
-									pthread_mutex_unlock(&mutex2);
+										pthread_mutex_unlock(&mutex2);
 										demandeConteneurHommeFlux(num);
 										pthread_cond_wait(&livraison[num], &mutex2);
 								}
@@ -281,6 +284,7 @@ intermediaire(int num){
 				printf("j'attend ********************************************\n");
 				pthread_cond_wait(&attendre[num], &mutex2);
 				printf("j'attend ******************************************** plusssssssss\n");
+				pthread_mutex_unlock(&mutex2);
 				pthread_mutex_lock(&mutex2);
 				printf("enfoiré\n");
 		}
@@ -310,6 +314,7 @@ aval(int num){
             			pthread_mutex_unlock(&mutex2);
 						//printf("lol\n");
 						demandeConteneurHommeFlux(num);
+						sleep(1);
 				}
 				else{
 					printf("demande anticipé\n");
@@ -354,14 +359,21 @@ construire(int num){
 		if (num != nbAteliers-1){
 				stock[num][0] = stock[num][0]-1;
 		}
-		//printf("debug404\n");
+		printf("debug404\n");
 		sleep(tabTempsAteliers[num]);
 }
 
 demandeConteneurHommeFlux(int num){
 	printf("demande\n");
-		tableauDeLancement[num+1]++;
-		pthread_cond_signal(&attendre[num+1]);
+	pthread_mutex_unlock(&mutex2);
+	pthread_mutex_lock(&mutex2);
+	printf("conard\n");
+	tableauDeLancement[num+1]++;
+	usleep(200);
+	printf("salope\n");
+	pthread_mutex_unlock(&mutex2);
+
+	pthread_cond_signal(&attendre[num+1]);
 }
 
 livraisonHommeFlux(int num){
@@ -373,10 +385,13 @@ livraisonHommeFlux(int num){
 	}
 	else{
 		nbPiecesConstruites++;	
+pthread_mutex_lock(&mutex2);
 		tableauDeLancement[num]--;
+		pthread_mutex_unlock(&mutex2);
 	}
 		
 	printf("tableau : %i\n",tableauDeLancement[num]);
+	pthread_mutex_unlock(&mutex2);
 	
 }
 
