@@ -205,10 +205,7 @@ initNbPiecesConteneur()
 				sleep(1);
 				printf("\n*************************** Usine Crée ***************************\n");
 				int i;
-				for (i = 0; i < nbAteliers; ++i)
-				{
-					printf("tableauDeLancement : \n", tableauDeLancement[0]);
-				}
+				
 		}
 
 		travaille(num);
@@ -221,23 +218,30 @@ initNbPiecesConteneur()
 travaille(int num)
 {
 		if (num == 0){
+						printf("yolo2\n");
 				aval(num);
 		}
 		else if (num == nbAteliers-1){
-				amont(num);
+						printf("yolo2\n");
+				//amont(num);
+						sleep(10);
 		}
 		else{
-				intermediaire(num);
+						printf("yolo2\n");
+						sleep(10);
+				//intermediaire(num);
 		}
 }
 
 intermediaire(int num){
+				printf("yolo2\n");
 		int pieceConteneurFini = 0;
 		while(arretAtelierBoolean[num] == false) { // variable a changer quand on a fini de tout construire
 				while(tableauDeLancement[num]!=0){
 						while (tabMaxConteneurAtelier[num-1] < pieceConteneurFini){
 								if (stock[num][0]!= 0){
-										construire();
+									printf("contruire interm\n");
+										construire(num);
 										pieceConteneurFini++;
 								}
 								else if (stock[num][0]==0 && stock[num][1]!=0){
@@ -261,32 +265,44 @@ intermediaire(int num){
 
 aval(int num){
 		while(tableauDeLancement[num]!=0){
-				if (stock[0]!= 0){
-						construire();
+			printf("stock : %i\n", stock[num][0]);
+			printf("stock 1 : %i\n", stock[num][1]);
+				if (stock[num][0]!= 0){
+					//printf("contruire aval\n");
+						construire(num);
+						printf("contruire aval\n");
 				}
-				else if (stock[0]==0 && stock[1]!=0){
-						stock[0]=stock[1];
-						stock[1]=0;
+				else if (stock[num][0]==0 && stock[num][1]!=0){
+						//printf("lol\n");
+						stock[num][0]=stock[num][1];
+						stock[num][1]=0;
+						//printf("lol\n");
 						demandeConteneurHommeFlux(num);
 				}
 				else{
+					printf("lol1\n");
 						demandeConteneurHommeFlux(num);
+						printf("lol2\n");
 						pthread_cond_wait(&livraison[num], &mutex);
 				}
-				livraisonHommeFlux();
+				//printf("dtc\n");
+				livraisonHommeFlux(num);
+				//printf("macdo\n");
 		}
 		arretAtelierBoolean[num+1] = true;
 }
 
 amont(int num){
+				printf("yolo2\n");
 		int pieceConteneurFini = 0;
 		while(arretAtelierBoolean[num] == false) {
 				while(tableauDeLancement[num]!=0){
 						while (tabMaxConteneurAtelier[num-1] < pieceConteneurFini){
-								construire();
+							printf("contruire amont\n");
+								construire(num);
 								pieceConteneurFini++;
 						}
-						livraisonHommeFlux();
+						livraisonHommeFlux(num);
 						pieceConteneurFini = 0;
 				}
 				pthread_cond_wait(&attendre[num], &mutex);
@@ -294,9 +310,13 @@ amont(int num){
 }
 
 construire(int num){
+	//printf("const\n");
+	printf("num : %i\n", num);
 		if (num != nbAteliers-1){
-				stock[num][0]--;
+			printf("stock : %i\n", stock[num][0]);
+				stock[num][0] = stock[num][0]-1;
 		}
+		//printf("debug404\n");
 		sleep(tabTempsAteliers[num]);
 }
 
@@ -305,8 +325,13 @@ demandeConteneurHommeFlux(int num){
 }
 
 livraisonHommeFlux(int num){
+	if (num!=0){
 		stock[num+1][1] = tabMaxConteneurAtelier[num+1];
-		pthread_cond_signal(&livraison[num-1]);
+	}
+	else{
+		nbPiecesConstruites++;	
+	}	
+	pthread_cond_signal(&livraison[num-1]);
 }
 
 initUsine()
@@ -341,6 +366,14 @@ initUsine()
 			tableauDeLancement[i]=0;
 		}
 		tableauDeLancement[0]=5;
+
+
+		// TODO A changer
+		for (i = 0; i < nbAteliers; ++i)
+		{
+			stock[i][0]=5;
+			stock[i][1]=3;
+		}
 
 		printf("yolo\n");
 
