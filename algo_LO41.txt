@@ -71,7 +71,6 @@ pieceConteneurFini++;
 
 demandeConteneurHommeFlux()
 TableauDeLancement[Suivant] ++;
-signal(attendre[suivant]);
 
 
 livraisonHommeFlux()

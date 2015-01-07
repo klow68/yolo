@@ -21,11 +21,12 @@ int booleanNbPiecesCommun = true;
 int nbPiecesParConteneur = 10;
 int nbPiecesConstruites = 0;
 int *tabMaxConteneurAtelier;
+int *arretAtelierBoolean;
 
 /* Déclaration variables moniteur */
 pthread_t *tabAteliers;
 pthread_mutex_t mutex;
-pthread_cond_t *produire, *attendre, threadCrees;
+pthread_cond_t *livraison, *produire, *attendre, threadCrees;
 
 
 /*                    */
@@ -35,6 +36,7 @@ void erreur(const char *msg)
 		exit(1);
 }
 
+/************************** Initialisation **************************/
 void initConf()
 {
   int choix;
@@ -182,7 +184,7 @@ void initNbPiecesConteneur()
   }
 }
 
-
+/************************** Ateliers **************************/
 
 void *AfficheEtat(void *data)
 {
@@ -236,8 +238,49 @@ void travaille(int num)
   }
 }
 
+void intermediaire(int num){
+  //TODO malloc arretAtelierBoolean + initalisation false
+  int pieceConteneurFini = 0;
+  while(arretAtelierBoolean[num] == false) { // variable a changer quand on a fini de tout construire
+    while(TableauDeLancement[num]!=0){
+      while (tabMaxConteneurAtelier[num-1] < pieceConteneurFini){
+          if (stock[num][0]!= 0){
+            construire();
+            pieceConteuneurFini++;
+          }
+          else if (stock[num][0]==0 && stock[num][1]!=0){
+            stock[num][0] = stock[num][1];
+            stock[num][1] = 0;
+            demandeConteneurHommeFlux(num);
+          }
+          else{
+            demandeConteneurHommeFlux(num);
+            pthread_cond_wait(&livraison[num], &mutex);
+          }
+    }
+    livraisonHommeFlux(num);
+    pieceConteuneurFini = 0;
+  }
+  pthread_cond_wait(attendre[num]);
+}
+changement boolean stop suivant
+}
+
 void construire(int num){
+  if (num != nbAtelier-1){
+    stock[num][0]--;
+  }
   sleep(tabTempsAteliers[num]);
+}
+
+void demandeConteneurHommeFlux(int num){
+  TableauDeLancement[num-1]++;
+  //pthread_cond_wait(attendre[num]); ne pas attendre
+}
+
+void livraisonHommeFlux(int num){
+  nbstock[suivant] = NBMAXConteneur[suiavant];
+  pthread_cond_signal(livraison[num+1])
 }
 
 void initUsine()
