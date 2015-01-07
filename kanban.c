@@ -264,18 +264,24 @@ intermediaire(int num){
 }
 
 aval(int num){
+  pthread_mutex_lock(&mutex);
 		while(tableauDeLancement[num]!=0){
+      pthread_mutex_unlock(&mutex);
 			printf("stock : %i\n", stock[num][0]);
 			printf("stock 1 : %i\n", stock[num][1]);
+      pthread_mutex_lock(&mutex);
 				if (stock[num][0]!= 0){
+          pthread_mutex_unlock(&mutex);
 					//printf("contruire aval\n");
 						construire(num);
 						printf("contruire aval\n");
 				}
+        pthread_mutex_lock(&mutex);
 				else if (stock[num][0]==0 && stock[num][1]!=0){
 						//printf("lol\n");
 						stock[num][0]=stock[num][1];
 						stock[num][1]=0;
+            pthread_mutex_unlock(&mutex);
 						//printf("lol\n");
 						demandeConteneurHommeFlux(num);
 				}
@@ -289,7 +295,9 @@ aval(int num){
 				livraisonHommeFlux(num);
 				//printf("macdo\n");
 		}
+    pthread_mutex_lock(&mutex);
 		arretAtelierBoolean[num+1] = true;
+    pthread_mutex_unlock(&mutex);
 }
 
 amont(int num){
