@@ -39,7 +39,8 @@ erreur(const char *msg)
 
 /************************** Initialisation **************************/
 initConf()
-{
+{	
+		
 		int choix;
 
 		printf("Bienvenue dans la configuration du programme Kanban.\n");
@@ -272,13 +273,12 @@ aval(int num){
       pthread_mutex_lock(&mutex);
 				if (stock[num][0]!= 0){
           pthread_mutex_unlock(&mutex);
-					//printf("contruire aval\n");
+					printf("contruire aval\n");
 						construire(num);
 						printf("contruire aval\n");
 				}
-        pthread_mutex_lock(&mutex);
 				else if (stock[num][0]==0 && stock[num][1]!=0){
-						//printf("lol\n");
+						printf("lol\n");
 						stock[num][0]=stock[num][1];
 						stock[num][1]=0;
             pthread_mutex_unlock(&mutex);
@@ -286,15 +286,17 @@ aval(int num){
 						demandeConteneurHommeFlux(num);
 				}
 				else{
-					printf("lol1\n");
+						pthread_mutex_unlock(&mutex);
 						demandeConteneurHommeFlux(num);
-						printf("lol2\n");
+						printf("wait\n");
 						pthread_cond_wait(&livraison[num], &mutex);
 				}
-				//printf("dtc\n");
+				printf("dtc\n");
 				livraisonHommeFlux(num);
-				//printf("macdo\n");
+				printf("macdo\n");
+				pthread_mutex_lock(&mutex);
 		}
+		pthread_mutex_unlock(&mutex);
     pthread_mutex_lock(&mutex);
 		arretAtelierBoolean[num+1] = true;
     pthread_mutex_unlock(&mutex);
@@ -344,7 +346,6 @@ livraisonHommeFlux(int num){
 
 initUsine()
 {
-
 		int i, j, k, rc;
 
 		// attribution de mémoire de manière dynamique au différent tableau
@@ -366,15 +367,18 @@ initUsine()
 		//initialisation boolean de fermeture d'atelier
 		for(i = 0; i<nbAteliers; i++){
 			arretAtelierBoolean[i]=false;
+			// init tableauDeLancement
+			tableauDeLancement[i]=0;
+			// init conditions
+			pthread_cond_init(&livraison[i], NULL);
+			pthread_cond_init(&attendre[i], NULL);
 		}
 
-		// init tableauDeLancement
-		for (i = 0; i < nbAteliers; ++i)
-		{
-			tableauDeLancement[i]=0;
-		}
 		tableauDeLancement[0]=5;
 
+		// init mutex et conditions
+		pthread_mutex_init(&mutex, NULL);
+		pthread_cond_init(&threadCrees, NULL);
 
 		// TODO A changer
 		for (i = 0; i < nbAteliers; ++i)
