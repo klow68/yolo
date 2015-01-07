@@ -282,17 +282,20 @@ aval(int num){
           			//pthread_mutex_unlock(&mutex2);
 					printf("contruire aval\n");
 						construire(num);
+					livraisonHommeFlux(num);
 				}
 				else if (stock[num][0]==0 && stock[num][1]!=0){
 						printf("lol\n");
 						stock[num][0]=stock[num][1];
+						printf("stock changer : %i\n", stock[num][0]);
 						stock[num][1]=0;
             			//pthread_mutex_unlock(&mutex2);
 						//printf("lol\n");
 						demandeConteneurHommeFlux(num);
-						pthread_cond_wait(&livraison[num], &mutex);
+						//pthread_cond_wait(&livraison[num], &mutex);
 				}
 				else{
+					printf("demande anticipé\n");
 						//pthread_mutex_unlock(&mutex2);
 						demandeConteneurHommeFlux(num);
 						printf("wait\n");
@@ -300,7 +303,6 @@ aval(int num){
 						pthread_cond_wait(&livraison[num], &mutex);
 				}
 
-				livraisonHommeFlux(num);
 
 				//pthread_mutex_lock(&mutex2);
 		}
@@ -339,6 +341,7 @@ construire(int num){
 }
 
 demandeConteneurHommeFlux(int num){
+	printf("demande\n");
 		tableauDeLancement[num+1]++;
 		pthread_cond_signal(&attendre[num+1]);
 }
@@ -347,13 +350,16 @@ livraisonHommeFlux(int num){
 	printf("livraison\n");
 	if (num!=0){
 		stock[num-1][1] = tabMaxConteneurAtelier[num-1];
+		tableauDeLancement[num]--;
+		pthread_cond_signal(&livraison[num-1]);
 	}
 	else{
 		nbPiecesConstruites++;	
+		tableauDeLancement[num]--;
 	}
-	tableauDeLancement[num]--;	
+		
 	printf("tableau : %i\n",tableauDeLancement[num]);
-	pthread_cond_signal(&livraison[num-1]);
+	
 }
 
 initUsine()
