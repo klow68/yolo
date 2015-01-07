@@ -204,6 +204,11 @@ initNbPiecesConteneur()
 				pthread_cond_wait(&threadCrees, &mutex);
 				sleep(1);
 				printf("\n*************************** Usine Crée ***************************\n");
+				int i;
+				for (i = 0; i < nbAteliers; ++i)
+				{
+					printf("tableauDeLancement : \n", tableauDeLancement[0]);
+				}
 		}
 
 		travaille(num);
@@ -215,31 +220,6 @@ initNbPiecesConteneur()
 
 travaille(int num)
 {
-		/*
-		// tant qu'il reste des pièce a produire (il faudrat un mutex sur la variable)
-		while(nbPiecesConstruites != nbPiecesAProduire){
-		//printf("thread num : %d travaille\n", num);
-		if (tabNbPiecesAttente[num] == 0){
-		//printf("Dors : %d\n", num);
-		pthread_cond_wait(&attendre[num], &mutex);
-		}
-		printf("thread num %d c'est réveillé\n", num);
-		pthread_cond_signal(&attendre[num+1]);
-		if (num != nbAteliers-1){
-		pthread_cond_wait(&produire[num], &mutex);
-		}
-		printf("\nl'atelier n°%d produit une piece", num);
-		construire(num);
-		if (num != 0){
-		pthread_cond_signal(&produire[num-1]);
-		} else {
-		nbPiecesConstruites ++;
-		printf("\n\n######## Nombre de pieces produites : [%d/%d] ########\n\n", nbPiecesConstruites, nbPiecesAProduire);
-		tabNbPiecesAttente[num] --;
-		}
-		}
-		*/
-
 		if (num == 0){
 				aval(num);
 		}
@@ -252,7 +232,6 @@ travaille(int num)
 }
 
 intermediaire(int num){
-		//TODO malloc arretAtelierBoolean + initalisation false
 		int pieceConteneurFini = 0;
 		while(arretAtelierBoolean[num] == false) { // variable a changer quand on a fini de tout construire
 				while(tableauDeLancement[num]!=0){
@@ -351,6 +330,19 @@ initUsine()
 				stock[i] = (int *) malloc(2 * sizeof(*(stock[i])));
 		}
 
+		//initialisation boolean de fermeture d'atelier
+		for(i = 0; i<nbAteliers; i++){
+			arretAtelierBoolean[i]=false;
+		}
+
+		// init tableauDeLancement
+		for (i = 0; i < nbAteliers; ++i)
+		{
+			tableauDeLancement[i]=0;
+		}
+		tableauDeLancement[0]=5;
+
+		printf("yolo\n");
 
 		if (booleanTempsProd == false){
 				printf("Configuration manuelle des temps de production des ateliers\n");
