@@ -38,6 +38,11 @@ erreur(const char *msg)
 }
 
 /************************** Initialisation **************************/
+/*
+
+initialisation du nombres d'atelier, du temps de production etc...
+
+*/
 initConf()
 {	
 		
@@ -93,6 +98,11 @@ initConf()
 		}
 }
 
+/*
+
+	initialisation du temp de production des ateliers
+
+*/
 initTempsProd()
 {
 		int choix;
@@ -139,7 +149,11 @@ initTempsProd()
 		}
 }
 
+/*
 
+	initialisation du nombres de pièce par conteneur pour chaques ateliers
+
+*/
 initNbPiecesConteneur()
 {
 		int choix;
@@ -188,6 +202,11 @@ initNbPiecesConteneur()
 
 /************************** Ateliers **************************/
 
+
+/*
+	Premier pas dans la vie de notre petit thread tout mignon qui viens de n'être
+*/
+
 *AfficheEtat(void *data)
 {
 
@@ -215,6 +234,13 @@ initNbPiecesConteneur()
 		pthread_exit(NULL);
 }
 
+/*
+	Au bout d'un moment il faut bien travailler et comme dans un régime communiste a chaqu'un ça place
+
+	num : 0 -> aval
+		  1/(n-2) -> intermédiaire
+		  n-1 -> amont
+*/
 travaille(int num)
 {
 		if (num == 0){
@@ -228,6 +254,19 @@ travaille(int num)
 		}
 }
 
+/*
+	Travaille de l'atelier intermédiaire
+	arretAtelierBoolean[num] est a true lors de la fermeture de l'usine
+	
+	while(tableauDeLancement[num]!=0) Tant qu'on a des commandes on ne s'arrête pas
+
+	if (stock[num][0]!= 0) si on a du stock on construit
+
+	else if (stock[num][0]==0 && stock[num][1]!=0) si l'un des deux conteneur est vide on les échange pour n'utiliser a chaque fois que le premier
+
+	else on a plus de stock alors on attend une livraison
+
+*/
 intermediaire(int num){
 		int pieceConteneurFini = 0;
 		pthread_mutex_lock(&mutex2);
@@ -277,6 +316,19 @@ intermediaire(int num){
 		arretAtelierBoolean[num+1] = true;
 }
 
+
+/*
+	Travaille de l'atelier en aval
+	
+	while(tableauDeLancement[num]!=0) Tant qu'on a des commandes on ne s'arrête pas
+
+	if (stock[num][0]!= 0) si on a du stock on construit
+
+	else if (stock[num][0]==0 && stock[num][1]!=0) si l'un des deux conteneur est vide on les échange pour n'utiliser a chaque fois que le premier
+
+	else on a plus de stock alors on attend
+
+*/
 aval(int num){
   		pthread_mutex_lock(&mutex2);
 		while(tableauDeLancement[num]!=0){
@@ -317,6 +369,15 @@ aval(int num){
   		pthread_mutex_unlock(&mutex2);
 }
 
+/*
+	Travaille de l'atelier en amont
+	arretAtelierBoolean[num] est a true lors de la fermeture de l'usine
+	
+	while(tableauDeLancement[num]!=0) Tant qu'on a des commandes on ne s'arrête pas
+
+	on construit sans regarder le stock car il est ilimité
+
+*/
 amont(int num){
 		int pieceConteneurFini = 0;
 		pthread_mutex_lock(&mutex2);
@@ -338,6 +399,10 @@ amont(int num){
 		pthread_mutex_unlock(&mutex2);
 }
 
+
+/*
+	contruit et retire le stock utilisé si nécessaire
+*/
 construire(int num){
 	//printf("const\n");
 	printf("# L'atelier numéro %i construit une pièce\n",num);
@@ -350,6 +415,9 @@ construire(int num){
 		sleep(tabTempsAteliers[num]);
 }
 
+/*
+	demande un conteneur a l'homme flux qui va transmettre la requête a l'atelier concerner
+*/
 demandeConteneurHommeFlux(int num){
 	printf("~ L'atelier numéro %i demande un conteneur\n",num);
 	pthread_mutex_unlock(&mutex2);
@@ -361,6 +429,9 @@ demandeConteneurHommeFlux(int num){
 	pthread_cond_signal(&attendre[num+1]);
 }
 
+/*
+	livraison d'un conteneur par l'homme flux
+*/
 livraisonHommeFlux(int num){
 	printf("& L'atelier numéro %i envoie un conteneur\n",num);
 	pthread_mutex_lock(&mutex2);
@@ -381,6 +452,9 @@ livraisonHommeFlux(int num){
 	
 }
 
+/*
+	initialisation de l'usine (mémoire dynamique etc)
+*/
 initUsine()
 {
 		int i, j, k, rc;
@@ -485,11 +559,14 @@ initUsine()
 
 }
 
+/*
+	libération de la mémoire des ressources utilisé
+*/
 pointeurAnnihilation()
 {
 		printf("\n");
 		printf("Libération des ressources ...");
-		
+
 		free(tabAteliers);
 		free(tabTempsAteliers);
 		free(tabMaxConteneurAtelier);
@@ -502,6 +579,10 @@ pointeurAnnihilation()
 		printf("OK.\n");
 }
 
+
+/*
+	traitement du signal de la touche ctrl-c pour fermer l'usine proprement
+*/
 traitant_SIGINT(){
   pointeurAnnihilation();
   printf("\nFermeture de l'usine MeinCroft\n");
