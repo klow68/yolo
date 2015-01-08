@@ -211,56 +211,43 @@ initNbPiecesConteneur()
 
 		travaille(num);
 		// pour le moment
-		exit(0);
 		printf("thread num %d a terminé\n", num);
 		pthread_exit(NULL);
 }
 
 travaille(int num)
 {
-	pthread_mutex_lock(&mutex2);
-	printf("son pere\n");
-	usleep(2000);
-	pthread_mutex_unlock(&mutex2);
 		if (num == 0){
-						printf("yolo2\n");
 				aval(num);
 		}
 		else if (num == nbAteliers-1){
-						printf("yolo2\n");
 				amont(num);
-						//sleep(10);
 		}
 		else{
-						printf("yolo2\n");
-						//sleep(10);
 				intermediaire(num);
 		}
 }
 
 intermediaire(int num){
-				printf("yolo2\n");
 		int pieceConteneurFini = 0;
 		pthread_mutex_lock(&mutex2);
 		while(arretAtelierBoolean[num] == false) { // variable a changer quand on a fini de tout construire
 			pthread_mutex_unlock(&mutex2);
-			printf("test1\n");
 			pthread_mutex_lock(&mutex2);
 				while(tableauDeLancement[num]!=0){
 					pthread_mutex_unlock(&mutex2);
-					printf("test2\n");
+
 						while (tabMaxConteneurAtelier[num-1] > pieceConteneurFini){
-							printf("\n\n");
+							printf("\n------Atelier numéro %i\n", num);
 
 							pthread_mutex_lock(&mutex2);
-							printf("stock : %i\n", stock[num][0]);
+							printf("stock 0 : %i\n", stock[num][0]);
 							printf("stock 1 : %i\n", stock[num][1]);
 								if (stock[num][0]!= 0){
 									pthread_mutex_unlock(&mutex2);
-									printf("contruire interm\n");
+									printf("\nconstruction intermédiaire\n");
 										construire(num);
 										pieceConteneurFini++;
-										printf("\ndebug fin\n");
 										pthread_mutex_unlock(&mutex2);
 								}
 								else if (stock[num][0]==0 && stock[num][1]!=0){
@@ -281,12 +268,9 @@ intermediaire(int num){
 						pthread_mutex_lock(&mutex2);
 				}
 				pthread_mutex_unlock(&mutex2);
-				printf("j'attend ********************************************\n");
 				pthread_cond_wait(&attendre[num], &mutex2);
-				printf("j'attend ******************************************** plusssssssss\n");
 				pthread_mutex_unlock(&mutex2);
 				pthread_mutex_lock(&mutex2);
-				printf("enfoiré\n");
 		}
 		pthread_mutex_unlock(&mutex2);
 		// donne l'ordre d'arrêt a l'atelier suivant
@@ -296,31 +280,28 @@ intermediaire(int num){
 aval(int num){
   		pthread_mutex_lock(&mutex2);
 		while(tableauDeLancement[num]!=0){
+			printf("\n------Atelier numéro %i\n", num);
+
       		pthread_mutex_unlock(&mutex2);
-			printf("stock : %i\n", stock[num][0]);
+			printf("stock 0 : %i\n", stock[num][0]);
 			printf("stock 1 : %i\n", stock[num][1]);
      		 pthread_mutex_lock(&mutex2);
 				if (stock[num][0]!= 0){
           			pthread_mutex_unlock(&mutex2);
-					printf("contruire aval\n");
+					printf("construction aval\n");
 						construire(num);
 					livraisonHommeFlux(num);
 				}
 				else if (stock[num][0]==0 && stock[num][1]!=0){
-						printf("lol\n");
 						stock[num][0]=stock[num][1];
-						printf("stock changer : %i\n", stock[num][0]);
 						stock[num][1]=0;
             			pthread_mutex_unlock(&mutex2);
-						//printf("lol\n");
 						demandeConteneurHommeFlux(num);
 						sleep(1);
 				}
 				else{
-					printf("demande anticipé\n");
 						pthread_mutex_unlock(&mutex2);
 						demandeConteneurHommeFlux(num);
-						printf("wait\n");
 						sleep(2);
 						pthread_cond_wait(&livraison[num], &mutex2);
 				}
@@ -337,12 +318,14 @@ aval(int num){
 }
 
 amont(int num){
-				printf("yolo2\n");
 		int pieceConteneurFini = 0;
+		pthread_mutex_lock(&mutex2);
 		while(arretAtelierBoolean[num] == false) {
 				while(tableauDeLancement[num]!=0){
+					pthread_mutex_unlock(&mutex2);
+					printf("\n------Atelier numéro %i\n\n", num);
 						while (tabMaxConteneurAtelier[num-1] > pieceConteneurFini){
-							printf("contruire amont\n");
+							printf("construction amont\n");
 								construire(num);
 								pieceConteneurFini++;
 						}
@@ -350,47 +333,50 @@ amont(int num){
 						pieceConteneurFini = 0;
 				}
 				pthread_cond_wait(&attendre[num], &mutex2);
+				pthread_mutex_lock(&mutex2);
 		}
+		pthread_mutex_unlock(&mutex2);
 }
 
 construire(int num){
 	//printf("const\n");
-	printf("num : %i\n", num);
+	printf("# L'atelier numéro %i construit une pièce\n",num);
+	pthread_mutex_unlock(&mutex2);	
+	pthread_mutex_lock(&mutex2);
 		if (num != nbAteliers-1){
 				stock[num][0] = stock[num][0]-1;
 		}
-		printf("debug404\n");
+	pthread_mutex_unlock(&mutex2);	
 		sleep(tabTempsAteliers[num]);
 }
 
 demandeConteneurHommeFlux(int num){
-	printf("demande\n");
+	printf("~ L'atelier numéro %i demande un conteneur\n",num);
 	pthread_mutex_unlock(&mutex2);
 	pthread_mutex_lock(&mutex2);
-	printf("conard\n");
 	tableauDeLancement[num+1]++;
 	usleep(200);
-	printf("salope\n");
 	pthread_mutex_unlock(&mutex2);
 
 	pthread_cond_signal(&attendre[num+1]);
 }
 
 livraisonHommeFlux(int num){
-	printf("livraison\n");
+	printf("& L'atelier numéro %i envoie un conteneur\n",num);
+	pthread_mutex_lock(&mutex2);
 	if (num!=0){
 		stock[num-1][1] = tabMaxConteneurAtelier[num-1];
 		tableauDeLancement[num]--;
 		pthread_cond_signal(&livraison[num-1]);
 	}
 	else{
-		nbPiecesConstruites++;	
-pthread_mutex_lock(&mutex2);
+		nbPiecesConstruites++;
 		tableauDeLancement[num]--;
-		pthread_mutex_unlock(&mutex2);
+		printf("Pièce final construites ************************* [%i/%i]\n",nbPiecesConstruites,nbPiecesAProduire );
 	}
+	pthread_mutex_unlock(&mutex2);
 		
-	printf("tableau : %i\n",tableauDeLancement[num]);
+	printf("Tableau de lancement : %i\n",tableauDeLancement[num]);
 	pthread_mutex_unlock(&mutex2);
 	
 }
@@ -438,8 +424,6 @@ initUsine()
 			stock[i][0]=5;
 			stock[i][1]=3;
 		}
-
-		printf("yolo\n");
 
 		if (booleanTempsProd == false){
 				printf("Configuration manuelle des temps de production des ateliers\n");
@@ -505,13 +489,28 @@ pointeurAnnihilation()
 {
 		printf("\n");
 		printf("Libération des ressources ...");
+		
 		free(tabAteliers);
 		free(tabTempsAteliers);
+		free(tabMaxConteneurAtelier);
+		free(tableauDeLancement);
+		free(attendre);
+		free(livraison);
+		free(stock);
+		free(arretAtelierBoolean);
+
 		printf("OK.\n");
+}
+
+traitant_SIGINT(){
+  pointeurAnnihilation();
+  printf("\nFermeture de l'usine MeinCroft\n");
+  exit(0);
 }
 
 int main(int argc, char *argv[])
 {
+		signal(SIGINT,traitant_SIGINT);
 
 		initConf();
 
@@ -519,4 +518,5 @@ int main(int argc, char *argv[])
 
 		printf("\nFermeture de l'usine MeinCroft\n");
 
+		exit(0);
 }
